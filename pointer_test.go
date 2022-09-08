@@ -1,6 +1,10 @@
-package helper
+package tips
 
-import "testing"
+import (
+	"github.com/stretchr/testify/assert"
+	"os"
+	"testing"
+)
 
 func TestIsNil(t *testing.T) {
 	b := new(string)
@@ -12,4 +16,12 @@ func TestIsNil(t *testing.T) {
 	if IsNil(c) == true {
 		t.Error("c is not an empty string")
 	}
+}
+
+func TestConfigWithViper(t *testing.T) {
+	apath, _ := os.Getwd()
+
+	vf := ConfigWithViper(apath + "/tmp/fix.yaml")
+	lg := vf.Sub("Log")
+	assert.True(t, lg.GetInt("Level") > 0)
 }

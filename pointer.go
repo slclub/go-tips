@@ -1,8 +1,8 @@
-package helper
+package tips
 
 import (
-	"fmt"
 	"github.com/fsnotify/fsnotify"
+	"github.com/slclub/go-tips/logf"
 	"github.com/slclub/go-tips/stringbyte"
 	"github.com/spf13/viper"
 	"path"
@@ -26,7 +26,7 @@ func ConfigWithViper(file_name_any string) *viper.Viper {
 	f_name := path.Base(file_name_any)
 	f_ext := "yaml"
 	if val := path.Ext(file_name_any); len(val) > 0 {
-		f_ext = val
+		f_ext = val[1:]
 	}
 	f_name = stringbyte.SubLeft(f_name, ".") // 去掉后缀
 	config := viper.New()
@@ -37,11 +37,11 @@ func ConfigWithViper(file_name_any string) *viper.Viper {
 	config.AddConfigPath(".")    // optionally look for config in the working directory
 	err := config.ReadInConfig() // Find and read the config file
 	if err != nil {              // Handle errors reading the config file
-		fmt.Errorf("Fatal error config file: %v \n", err)
+		logf.Printf("Fatal error config file: %v \n", err)
 	}
 
 	config.OnConfigChange(func(e fsnotify.Event) {
-		fmt.Println("Config file changed:", e.Name)
+		logf.Printf("Config file changed:", e.Name)
 	})
 	config.WatchConfig()
 	return config

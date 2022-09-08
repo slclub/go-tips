@@ -1,4 +1,4 @@
-package helper
+package tips
 
 import (
 	"fmt"
@@ -20,7 +20,7 @@ var Rand *rand.Rand = rand.New(rand.NewSource(time.Now().UnixNano()))
 func GetGoroutineId() int {
 	defer func() {
 		if err := recover(); err != any(nil) {
-			fmt.Println("panic recover:panic info:", err)
+			log.Print("panic recover:panic info:", err)
 		}
 	}()
 
