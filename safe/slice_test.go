@@ -23,7 +23,7 @@ func TestSliceInt(t *testing.T) {
 		return true
 	})
 
-	ss1.Del(0)
+	ss1.Del(1)
 	assert.True(t, ss1.Len() == 7)
 	ss1.AppendUnqiue(4)
 	assert.True(t, ss1.Len() == 7)
@@ -53,7 +53,7 @@ func TestSliceInt32(t *testing.T) {
 		return true
 	})
 
-	ss1.Del(0)
+	ss1.Del(1)
 	assert.True(t, ss1.Len() == 7)
 	ss1.AppendUnqiue(4)
 	assert.True(t, ss1.Len() == 7)
@@ -82,7 +82,7 @@ func TestSliceInt64(t *testing.T) {
 		return true
 	})
 
-	ss1.Del(0)
+	ss1.Del(1)
 	assert.True(t, ss1.Len() == 7)
 	ss1.AppendUnqiue(4)
 	assert.True(t, ss1.Len() == 7)
@@ -112,7 +112,7 @@ func TestSliceString(t *testing.T) {
 		return true
 	})
 
-	ss1.Del(0)
+	ss1.Del("1")
 	assert.True(t, ss1.Len() == 7)
 	ss1.AppendUnqiue("4")
 	assert.True(t, ss1.Len() == 7)
@@ -146,7 +146,7 @@ func TestSliceValue(t *testing.T) {
 		return true
 	})
 
-	ss1.Del(0)
+	ss1.Del(valueInt(1))
 	assert.True(t, ss1.Len() == 7)
 	ss1.AppendUnqiue(valueInt(10))
 	assert.True(t, ss1.Len() == 7)

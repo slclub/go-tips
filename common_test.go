@@ -16,4 +16,8 @@ func TestAny2Int64(t *testing.T) {
 	if si := Any2Int64(a); si != 1232 {
 		t.Error("Any2Int64 not pass")
 	}
+	var b float64 = 23432.0
+	if Any2Int64(b) != int64(23432) {
+		t.Error("Any2Int64 not pass")
+	}
 }

@@ -51,13 +51,25 @@ func (this *SliceInt) AppendArr(arrs ...[]int) {
 	}
 }
 
-func (this *SliceInt) Del(k int) {
+func (this *SliceInt) Del(val int) int {
 	for i, n := 0, len(*this); i < n; i++ {
-		if k == i {
+		if (*this)[i] == val {
 			(*this)[i] = (*this)[n-1]
 			(*this) = (*this)[:n-1]
+			return i
 		}
 	}
+	return -1
+}
+
+func (this *SliceInt) DelKey(k int) int {
+	n := len(*this)
+	if k >= n {
+		return 0
+	}
+	(*this)[k] = (*this)[n-1]
+	(*this) = (*this)[:n-1]
+	return (*this)[k]
 }
 
 func (this *SliceInt) Reset() {
@@ -149,13 +161,25 @@ func (this *SliceInt32) AppendArr(arrs ...[]int32) {
 	}
 }
 
-func (this *SliceInt32) Del(k int) {
+func (this *SliceInt32) Del(val int32) int {
 	for i, n := 0, len(*this); i < n; i++ {
-		if k == i {
+		if (*this)[i] == val {
 			(*this)[i] = (*this)[n-1]
 			(*this) = (*this)[:n-1]
+			return i
 		}
 	}
+	return -1
+}
+
+func (this *SliceInt32) DelKey(k int) int32 {
+	n := len(*this)
+	if k >= n {
+		return 0
+	}
+	(*this)[k] = (*this)[n-1]
+	(*this) = (*this)[:n-1]
+	return (*this)[k]
 }
 
 func (this *SliceInt32) Reset() {
@@ -245,13 +269,25 @@ func (this *SliceInt64) AppendArr(arrs ...[]int64) {
 	}
 }
 
-func (this *SliceInt64) Del(k int) {
+func (this *SliceInt64) Del(val int64) int {
 	for i, n := 0, len(*this); i < n; i++ {
-		if k == i {
+		if (*this)[i] == val {
 			(*this)[i] = (*this)[n-1]
 			(*this) = (*this)[:n-1]
+			return i
 		}
 	}
+	return -1
+}
+
+func (this *SliceInt64) DelKey(k int) int64 {
+	n := len(*this)
+	if k >= n {
+		return 0
+	}
+	(*this)[k] = (*this)[n-1]
+	(*this) = (*this)[:n-1]
+	return (*this)[k]
 }
 
 func (this *SliceInt64) Reset() {

@@ -47,13 +47,25 @@ func (this *SliceString) AppendArr(arrs ...[]string) {
 	}
 }
 
-func (this *SliceString) Del(k int) {
+func (this *SliceString) Del(val string) int {
 	for i, n := 0, len(*this); i < n; i++ {
-		if k == i {
+		if (*this)[i] == val {
 			(*this)[i] = (*this)[n-1]
 			(*this) = (*this)[:n-1]
+			return i
 		}
 	}
+	return -1
+}
+
+func (this *SliceString) DelKey(k int) string {
+	n := len(*this)
+	if k >= n {
+		return ""
+	}
+	(*this)[k] = (*this)[n-1]
+	(*this) = (*this)[:n-1]
+	return (*this)[k]
 }
 
 func (this *SliceString) Reset() {

@@ -50,13 +50,25 @@ func (this *SliceValue) AppendArr(arrs ...[]Value) {
 	}
 }
 
-func (this *SliceValue) Del(k int) {
+func (this *SliceValue) Del(val Value) int {
 	for i, n := 0, len(*this); i < n; i++ {
-		if k == i {
+		if (*this)[i].Value() == val.Value() {
 			(*this)[i] = (*this)[n-1]
 			(*this) = (*this)[:n-1]
+			return i
 		}
 	}
+	return -1
+}
+
+func (this *SliceValue) DelKey(k int) Value {
+	n := len(*this)
+	if k >= n {
+		return nil
+	}
+	(*this)[k] = (*this)[n-1]
+	(*this) = (*this)[:n-1]
+	return (*this)[k]
 }
 
 func (this *SliceValue) Reset() {
