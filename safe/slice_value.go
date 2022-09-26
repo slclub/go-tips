@@ -16,6 +16,7 @@ func (this *SliceValue) Append(val Value) {
 func (this *SliceValue) AppendUnqiue(val Value) {
 	for i, n := 0, this.Len(); i < n; i++ {
 		if (*this)[i].Value() == val.Value() {
+			(*this)[i] = val // 覆盖
 			return
 		}
 	}
