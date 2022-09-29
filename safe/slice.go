@@ -67,9 +67,10 @@ func (this *SliceInt) DelKey(k int) int {
 	if k >= n {
 		return 0
 	}
+	o := (*this)[k]
 	(*this)[k] = (*this)[n-1]
 	(*this) = (*this)[:n-1]
-	return (*this)[k]
+	return o
 }
 
 func (this *SliceInt) Reset() {
@@ -177,9 +178,10 @@ func (this *SliceInt32) DelKey(k int) int32 {
 	if k >= n {
 		return 0
 	}
+	o := (*this)[k]
 	(*this)[k] = (*this)[n-1]
 	(*this) = (*this)[:n-1]
-	return (*this)[k]
+	return o
 }
 
 func (this *SliceInt32) Reset() {
@@ -285,9 +287,10 @@ func (this *SliceInt64) DelKey(k int) int64 {
 	if k >= n {
 		return 0
 	}
+	o := (*this)[k]
 	(*this)[k] = (*this)[n-1]
 	(*this) = (*this)[:n-1]
-	return (*this)[k]
+	return o
 }
 
 func (this *SliceInt64) Reset() {

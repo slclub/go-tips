@@ -67,9 +67,10 @@ func (this *SliceValue) DelKey(k int) Value {
 	if k >= n {
 		return nil
 	}
+	o := (*this)[k]
 	(*this)[k] = (*this)[n-1]
 	(*this) = (*this)[:n-1]
-	return (*this)[k]
+	return o
 }
 
 func (this *SliceValue) Reset() {

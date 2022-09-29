@@ -63,9 +63,10 @@ func (this *SliceString) DelKey(k int) string {
 	if k >= n {
 		return ""
 	}
+	o := (*this)[k]
 	(*this)[k] = (*this)[n-1]
 	(*this) = (*this)[:n-1]
-	return (*this)[k]
+	return o
 }
 
 func (this *SliceString) Reset() {
