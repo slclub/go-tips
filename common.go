@@ -51,6 +51,10 @@ func GetRootPath() string {
 // It will be zere if any error happend
 func Any2Int64(v any) int64 {
 	switch val := v.(type) {
+	case int8:
+		return int64(val)
+	case uint8:
+		return int64(val)
 	case int32:
 		return int64(val)
 	case uint32:
@@ -81,4 +85,8 @@ func Any2Int64(v any) int64 {
 		return n
 	}
 	return 0
+}
+
+func Int(v any) int {
+	return int(Any2Int64(v))
 }
