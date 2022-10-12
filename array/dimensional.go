@@ -11,13 +11,12 @@ import (
 
 func DimensionPlugk(target any, data any, field any) {
 	switch data_arr := data.(type) {
-	case []map[string]any:
+	case []map[string]any, []map[int]any, [][]any:
 		DimensionPluckMap(target, data_arr, field.(string))
 		return
 	case []any:
 		DimensionPluckStruct(target, data_arr, field.(string))
 		return
-	case []map[int]any:
 	}
 }
 
@@ -118,6 +117,8 @@ func rangeMapAny(data any, fn func(v any), field any) {
 		_rangeMapAnyString(datad, fn, field.(string))
 	case []map[int]any:
 		_rangeMapAnyInt(datad, fn, int(convtype.Any2Int64(field)))
+	case [][]any:
+		_rangeMapAnySlice(datad, fn, int(convtype.Any2Int64(field)))
 	}
 }
 
@@ -141,6 +142,16 @@ func _rangeMapAnyInt(data []map[int]any, fn func(m any), field int) {
 			continue
 		}
 		fn(val)
+	}
+}
+
+func _rangeMapAnySlice(data [][]any, fn func(m any), field int) {
+	for i, n := 0, len(data); i < n; i++ {
+		item := data[i]
+		if n > field {
+			continue
+		}
+		fn(item)
 	}
 }
 
