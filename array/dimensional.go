@@ -18,6 +18,7 @@ func DimensionPlugk(target any, data any, field any) {
 		DimensionPluckStruct(target, data_arr, field.(string))
 		return
 	}
+	DimensionPluckReflectSlice(target, data, field.(string))
 }
 
 // 二维数组某一个键，变一维数组
@@ -111,6 +112,62 @@ func DimensionPluckStruct(target any, data []any, field string) {
 	}
 }
 
+func DimensionPluckReflectSlice(target any, data any, field string) {
+	if data == nil {
+		return
+	}
+	datat := reflect.TypeOf(data)
+	valuet := reflect.ValueOf(data)
+	if datat.Kind() == reflect.Ptr {
+		datat = datat.Elem()
+		valuet = valuet.Elem()
+	}
+	if datat.Kind() != reflect.Slice {
+		return
+	}
+	switch target_arr := target.(type) {
+	case *[]string:
+		_rangeWithReflect(valuet, func(val any) {
+			if val_val, ok := val.(string); ok {
+				*target_arr = append(*target_arr, (val_val))
+			}
+		}, field)
+		return
+	case *[]int:
+		_rangeWithReflect(valuet, func(val any) {
+			*target_arr = append(*target_arr, int(convtype.Any2Int64(val)))
+		}, field)
+		return
+	case *[]int64:
+		_rangeWithReflect(valuet, func(val any) {
+			*target_arr = append(*target_arr, (convtype.Any2Int64(val)))
+		}, field)
+		return
+	case *[]int32:
+		_rangeWithReflect(valuet, func(val any) {
+			*target_arr = append(*target_arr, int32(convtype.Any2Int64(val)))
+		}, field)
+		return
+	case *[]int16:
+		_rangeWithReflect(valuet, func(val any) {
+			*target_arr = append(*target_arr, int16(convtype.Any2Int64(val)))
+		}, field)
+		return
+	case *[]int8:
+		_rangeWithReflect(valuet, func(val any) {
+			*target_arr = append(*target_arr, int8(convtype.Any2Int64(val)))
+		}, field)
+		return
+	case *[]any:
+		_rangeWithReflect(valuet, func(val any) {
+			*target_arr = append(*target_arr, (val))
+		}, field)
+		return
+	}
+}
+
+// internal functions
+
 func rangeMapAny(data any, fn func(v any), field any) {
 	switch datad := data.(type) {
 	case []map[string]any:
@@ -121,8 +178,6 @@ func rangeMapAny(data any, fn func(v any), field any) {
 		_rangeMapAnySlice(datad, fn, int(convtype.Any2Int64(field)))
 	}
 }
-
-// internal functions
 func _rangeMapAnyString(data []map[string]any, fn func(m any), field string) {
 	for i, n := 0, len(data); i < n; i++ {
 		item := data[i]
@@ -175,5 +230,22 @@ func _rangeAny(data []any, fn func(m any), field string) {
 		//	continue
 		//}
 		fn(val)
+	}
+}
+
+func _rangeWithReflect(values reflect.Value, fn func(any), field string) {
+	for i := 0; i < values.Len(); i++ {
+		item := values.Index(i)
+		if item.Kind() == reflect.Ptr {
+			item = item.Elem()
+		}
+		if item.Kind() != reflect.Struct {
+			continue
+		}
+		v := item.FieldByName(field)
+		if !v.IsValid() {
+			continue
+		}
+		fn(v.Interface())
 	}
 }

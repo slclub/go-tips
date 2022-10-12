@@ -1,7 +1,9 @@
 package array
 
 import (
+	"fmt"
 	"github.com/slclub/go-tips/logf"
+	"reflect"
 	"strconv"
 	"testing"
 )
@@ -45,6 +47,28 @@ func TestDimensionPlugk(t *testing.T) {
 	ids := []int{}
 	DimensionPlugk(&ids, pusers, "ID")
 	logf.Log().Print("get arr int of *struct:", ids)
+
+	users2 := []*user{}
+	for i := 0; i < 10; i++ {
+		u := user{
+			ID:       i,
+			Name:     "name" + strconv.Itoa(i),
+			CreateAt: int64(i + 64),
+			Sex:      int8(i % 2),
+		}
+		users2 = append(users2, &u)
+	}
+	ids = []int{}
+	DimensionPlugk(&ids, users2, "ID")
+	logf.Log().Print("get arr2 int of *struct:", ids)
+}
+
+func TestSliceStructAny(t *testing.T) {
+	data := []*user{
+		&user{ID: 1},
+	}
+	kind := reflect.TypeOf(data).Kind()
+	fmt.Println("KIND:", kind)
 }
 
 type user struct {
