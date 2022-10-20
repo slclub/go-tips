@@ -22,6 +22,8 @@ func Any2Int64(v any) int64 {
 		return int64(val)
 	case uint64:
 		return int64(val)
+	case int64:
+		return val
 	case float64:
 		return int64(val)
 	case float32:
