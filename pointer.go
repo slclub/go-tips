@@ -10,11 +10,16 @@ import (
 )
 
 func IsNil(i interface{}) bool {
-	vi := reflect.ValueOf(i)
-	if vi.Kind() == reflect.Ptr {
-		return vi.IsNil()
+	ret := i == nil
+
+	if !ret { //需要进一步做判断
+		defer func() {
+			recover()
+		}()
+		ret = reflect.ValueOf(i).IsNil() //值类型做异常判断，会panic的
 	}
-	return false
+
+	return ret
 }
 
 // 用viper 读取配置文件
