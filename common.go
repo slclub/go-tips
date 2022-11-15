@@ -55,29 +55,3 @@ func Any2Int64(v any) int64 {
 func Int(v any) int {
 	return int(Any2Int64(v))
 }
-
-func String(v any) string {
-	switch val := v.(type) {
-	case string:
-		return val
-	case int64:
-		return strconv.FormatInt(val, 10)
-	case uint64:
-		return strconv.FormatInt(int64(val), 10)
-	case float64:
-		return strconv.FormatFloat(val, 'E', -1, 64)
-	case int32:
-		return strconv.FormatInt(int64(val), 10)
-	case uint32:
-		return strconv.FormatInt(int64(val), 10)
-	case int16:
-		return strconv.FormatInt(int64(val), 10)
-	case uint16:
-		return strconv.FormatInt(int64(val), 10)
-	case int8:
-		return strconv.FormatInt(int64(val), 10)
-	case uint8:
-		return strconv.FormatInt(int64(val), 10)
-	}
-	return ""
-}
