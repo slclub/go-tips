@@ -9,6 +9,8 @@ func String(v any) string {
 		return val
 	case int64:
 		return strconv.FormatInt(val, 10)
+	case int:
+		return strconv.FormatInt(int64(val), 10)
 	case uint64:
 		return strconv.FormatInt(int64(val), 10)
 	case float64:
