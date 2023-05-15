@@ -16,6 +16,8 @@ func Any2Int64(v any) int64 {
 		return int64(val)
 	case uint32:
 		return int64(val)
+	case uint:
+		return int64(val)
 	case int16:
 		return int64(val)
 	case uint16:
