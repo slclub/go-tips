@@ -29,6 +29,8 @@ func String(v any) string {
 		return strconv.FormatInt(int64(val), 10)
 	case []byte:
 		return string(val)
+	case []rune:
+		return string(val)
 	}
 	return ""
 }
@@ -41,6 +43,9 @@ func StrPos(str, sep string) int {
 	}
 	for i, n := 0, len(str); i < n; i++ {
 		if i+3 >= n {
+			return -1
+		}
+		if i+sepl > n {
 			return -1
 		}
 		if str[i:i+sepl] == sep {
