@@ -1,5 +1,9 @@
 package tips
 
+/**
+ * The first method
+ * 比较浪费性能的，需要内存申请的 三目运算
+ */
 type ifExpression struct {
 	cond  bool
 	value any
@@ -35,4 +39,16 @@ func (self *ifExpression) Int() int {
 
 func (self *ifExpression) String() string {
 	return String(self.Value())
+}
+
+/**
+ * The second method
+ */
+func IfThree(cond bool) func(v1, v2 any) any {
+	return func(v1, v2 any) any {
+		if cond {
+			return v1
+		}
+		return v2
+	}
 }

@@ -22,3 +22,16 @@ func TestExpression(t *testing.T) {
 		t.Error("Three Expresion value should is yes")
 	}
 }
+
+func TestIfThree(t *testing.T) {
+	A := IfThree(true)(1, 0)
+	if Int(A) != 1 {
+		t.Error("IfThree value should be 1")
+	}
+
+	B := IfThree(false)("yes", "no")
+	if String(B) != "no" {
+		t.Error("ifThree value should be `no` when condition is false")
+	}
+
+}
