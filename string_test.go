@@ -1,6 +1,7 @@
 package tips
 
 import (
+	"errors"
 	"testing"
 )
 
@@ -64,5 +65,14 @@ func TestStrEnd(t *testing.T) {
 	}
 	if StrEnd(str, " ") != "world go tips" {
 		t.Error("strings StrPos expect:world go tips")
+	}
+
+}
+
+func TestString(t *testing.T) {
+	_trr := "error to string"
+	trr := errors.New(_trr)
+	if String(trr) != _trr {
+		t.Fatal("TIPS.String  error to string")
 	}
 }

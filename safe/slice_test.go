@@ -123,6 +123,8 @@ func TestSliceString(t *testing.T) {
 
 	ss1.Reset()
 	assert.True(t, len(ss1) == 0)
+
+	_ = append(ss1, s1...)
 }
 
 type valueInt int
@@ -157,4 +159,5 @@ func TestSliceValue(t *testing.T) {
 	logf.Print("SliceValue", ss1)
 	ss1.Reset()
 	assert.True(t, len(ss1) == 0)
+
 }
