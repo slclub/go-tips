@@ -80,7 +80,7 @@
 
 --------------
 
-### comment functions
+### common functions
 
 #### IsNil(i interface{}) bool | 正确的判断 nil 和 空接口的nil
 
@@ -147,6 +147,8 @@
 
 #### Slice 自定义 系列 
 
+这也是写 go-tips 的由来；总结之后写的业务，确实能 简化，减少代码量，和bug少些。避免反复写一堆比较函数；使用更简短的代码去建立不同数组对象的关系。
+
 - 增加常用整数类型的切片操作，查找，合并，删除，比较等
 - 可以直接互相强制转换标准复杂类型，这里的
 ```go
@@ -162,6 +164,7 @@
 ```
 - 可以支持 原生golang 的语法 [:], append,copy 等操作 
 - 多数组简易合并，是否 unique 都可以使用不同的方法
+- 只有SliceValue 稍微有些不同，但使用起来仍然让人挺惊讶的
 
 
 ##### 1. type SliceString []string | 字符串切片
@@ -226,7 +229,7 @@
         Value() int64
     }
 ```
-- Value 就无法
+- SliceValue 就无法直接互换类型了
 - 除了copy 同样支持 slice 的标准操作
 - 方法
 ```go
@@ -242,4 +245,161 @@
 ```
 
 --------------
+
+### 异步事件 module_event 模块
+
+ 
+- 使用：最好的教程就是 event_test内的测试代码
+
+```go 
+    go get github.com/slclub/go-tips/events/module_event
+```
+- 特性：
+
+```go
+    1. 异步
+    2. 可以选择模式，是所有事件handle 并发 还是 同步
+    3. 自定义线程池，可以嵌入 实现下 module_event.AsyncSubmiter 接口即可;默认使用ants
+```
+
+- simple example:
+```go
+func TestEventCommon(t *testing.T) {
+	// new  创建事件监视器
+    eventMonitor := NewEvent(&Option{})
+    
+    // register 绑定消息ID 和Handle 且绑定到 该 监视器中
+    eventMonitor.Register(EventHandle(handleLogin), &TEST_EVENT_ID_LOGIN)                        // register fail
+    eventMonitor.Register(EventHandle(handleLogout), &TEST_EVENT_ID_LOGOUT)                      // register fail
+    eventMonitor.Register(EventHandle(handleTrace), &TEST_EVENT_ID_LOGIN, &TEST_EVENT_ID_LOGOUT) // regsiter fail
+    eventMonitor.Register(EventHandle(handleLogout), nil)                                        // register fail
+    eventMonitor.Register(HandleConvert(anotherHandle), &TEST_EVENT_ID_ANOTHER)                  // register ok
+    
+    // trigger 触发 提交事件
+    eventMonitor.Submit(&EventOper{&TEST_EVENT_ID_LOGIN, "", []any{t, 1, 2, "event"}}) // ok
+    eventMonitor.Trigger(&TEST_EVENT_ID_ANOTHER, t, 3, "gold")
+    
+    // emit 执行所提交的事件
+    eventMonitor.Emit()
+    time.Sleep(10 * time.Millisecond)
+    
+    // release 释放
+    eventMonitor.Close()
+}
+```
+
+> #### $$ 使用步骤如下：
+
+>>1. 创建事件监视器
+
+这是最简单且是异步并发处理的
+
+```go
+    eventMonitor := NewEvent(&Option{})
+```
+
+>>2. 注册事件
+
+定义消息ID
+
+```go
+    var (
+        TEST_EVENT_ID_LOGIN   EVENT_ID_STRING = "TEST.LOGIN"
+        TEST_EVENT_ID_LOGOUT  EVENT_ID_STRING = "TEST.LOGOUT"
+        TEST_EVENT_ID_ANOTHER EVENT_ID_INT    = 1001
+    )
+```
+
+有关消息ID 的详细信息可以看源码，或者看下面 消息ID小结中。
+
+
+注册到事件监视器中
+```go
+    // register
+    eventMonitor.Register(EventHandle(handleLogin), &TEST_EVENT_ID_LOGIN)                        // register fail
+    eventMonitor.Register(EventHandle(handleLogout), &TEST_EVENT_ID_LOGOUT)                      // register fail
+    eventMonitor.Register(EventHandle(handleTrace), &TEST_EVENT_ID_LOGIN, &TEST_EVENT_ID_LOGOUT) // regsiter fail
+    eventMonitor.Register(EventHandle(handleLogout), nil)                                        // register fail
+    eventMonitor.Register(HandleConvert(anotherHandle), &TEST_EVENT_ID_ANOTHER)                  // register ok
+```
+
+>>3. 在适当的异步的位置执行发射函数
+
+```go
+    eventMonitor.Emit()
+```
+如果用定时执轮训的方式，就不需要 单独去执行发射函数 Emit
+
+>>4. 安全释放
+
+```go
+    eventMonitor.Close()
+```
+so easy
+
+>#### 事件消息ID 类型
+
+所有的消息ID 都要实现 EventValue 接口
+```go
+    type EventValue interface {
+        Value() string
+    }
+```
+
+系统默认支持2中消息类型，简单点说就是基于系统的类型衍生一下
+
+```go
+    // 事件ID 分两种，都继承了 EventValue
+    type EVENT_ID_INT int
+    type EVENT_ID_STRING string
+```
+
+>#### 消息Handle
+
+同样也定义了类型，但不用担心, 还是挺好用
+```go
+    type EventHandle func(oper *EventOper)
+```
+
+可以用 ```HandleConvert``` 把 ```func(args ...any)``` 转化成EventHandle; module event直接提供的函数
+
+函数签名如下
+```go
+HandleConvert(fn func(args ...any)) EventHandle
+```
+
+一个Handle 可以对应多个事件ID
+
+事件ID 和 事件Handle 是多对多的关系
+
+>#### 事件监视器控制，和自定义部分
+
+- 用 Option 初始化 Event
+
+Option 的定义在源码中很清楚
+
+- example
+```go
+    eventMonitor := NewEvent(&Option{
+        InOrder:        false,  // 是否让所有事件 顺序同步执行
+        TimeTickPeriod: time.Duration(10 * time.Millisecond), //不启用轮训机制 设置成0 即可
+        Submiter:       antsPool(), // 植入自己的携程池
+    })
+```
+
+- Custom routine pool
+
+实现接口 ```AsyncSubmiter``` 赋值给 ```Option.Sumiter``` 
+
+```go
+    // routine pool interface
+    // please remenber use Release method to free your memory of pool
+    type AsyncSubmiter interface {
+        Submit(func()) error
+        Release()
+    }
+```
+
+----
+
 
