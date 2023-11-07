@@ -8,11 +8,11 @@
 
 - [strings](#strings-字符串类的)
 - [date](#date)
-- [spinLock](#spin-lock)
+- [spinLock](#spinLock-无IO-锁)
 - [common functions](#common-functions)
-- [logf.Logger](#logf.Logger)
-- [json 包 ](#json-包 )
-- [safe](#safe)
+- [logf.Logger](#logf-Logger)
+- [json package ](#json-package )
+- [safe](#safe-package)
 - [异步事件 module event ](#异步事件-module_event-模块)
 
 --------------
@@ -137,12 +137,12 @@
 
 --------------
 
-### json 包 
+### json package
 接口与标准的是一样的，值得拿出来的原因是：防止数字总会专成 float64 ， 我们以 int 为主
 
 --------------
 
-### safe 包
+### safe package
 
 名字叫 的并不贴切
 
