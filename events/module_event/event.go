@@ -107,8 +107,16 @@ func (self *Event) Trigger(eid EventValue, args ...any) {
 	self.Submit(oper)
 }
 
+// 发射事件
+// 具体的事件函数执行是不占用  发射流程的
 func (self *Event) Emit() {
 	if self.flow.Len() == 0 {
+		return
+	}
+	// 或者直接使用锁 保证 事件发射流程 顺序执行；也就是保证idle 不用重复设置
+	// 发射流程，没有自定义部分，仅仅是内置行为，保证没有panic  不会影响到 flow idle 状态
+	// 发射流程
+	if !self.flow.idle() {
 		return
 	}
 	self.flow.idle(false)
