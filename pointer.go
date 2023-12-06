@@ -22,8 +22,17 @@ func IsNil(i interface{}) bool {
 	return ret
 }
 
+var conf *viper.Viper
+
 // 用viper 读取配置文件
 func ConfigWithViper(file_name_any string) *viper.Viper {
+	if conf == nil {
+		conf = configWithViper(file_name_any)
+	}
+	return conf
+}
+
+func configWithViper(file_name_any string) *viper.Viper {
 	if file_name_any == "" {
 		return nil
 	}
