@@ -21,7 +21,7 @@ func String(v any) string {
 	case uint64:
 		return strconv.FormatInt(int64(val), 10)
 	case float64:
-		return strconv.FormatFloat(val, 'E', -1, 64)
+		return strconv.FormatFloat(val, 'f', -1, 64)
 	case int32:
 		return strconv.FormatInt(int64(val), 10)
 	case uint32:
