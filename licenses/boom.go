@@ -36,6 +36,9 @@ func (self *Boom) SetDur(d time.Duration) {
 func (self *Boom) update() {
 	d := time.NewTicker(self.dur)
 	defer d.Stop()
+	if !self.CheckInternet() {
+		self.timeStop++
+	}
 	for {
 		select {
 		case <-d.C:
