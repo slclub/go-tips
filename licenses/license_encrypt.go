@@ -79,6 +79,17 @@ func (self *LicenseSrv) MakeLicense(license *License) error {
 	return self.save(self.Path()+"/"+"LICENSE", license)
 }
 
+func (self *LicenseSrv) MakeLicenseSimple(license *License) error {
+	// 签名许可证
+	signature, err := self.signLicense(license, self.RSA.PrivateKey())
+	if err != nil {
+		return err
+	}
+	license.Signature = signature
+
+	return nil
+}
+
 func (self *LicenseSrv) Path(ps ...string) string {
 	if len(ps) > 0 {
 		self.license_path = ps[0]
