@@ -37,7 +37,7 @@ func TestLicense(t *testing.T) {
 	rs.Path("./tmp/test")
 
 	lserv := NewLicenseServ(func(serv *LicenseSrv) {
-		serv.Model = MODEL_GOB
+		serv.Model = MODEL_JSON
 	}, func(serv *LicenseSrv) {
 		serv.RSA = rs
 		serv.Auth("admin", "testing")
@@ -90,6 +90,11 @@ func TestLicenseChange(t *testing.T) {
 		t.Fatal(errors.New("the license of changed should not be passed!"))
 	}
 	t.Log("Verify License OK")
+}
+
+// 测试不同平台的license
+func TestDiffPlatLicense(t *testing.T) {
+
 }
 
 // testing functions

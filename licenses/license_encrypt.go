@@ -6,26 +6,16 @@ import (
 	"crypto"
 	"crypto/rand"
 	"crypto/rsa"
-	"crypto/sha256"
 	"encoding/gob"
 	"encoding/json"
 	"io/ioutil"
 	"os"
-	"time"
 )
 
 const (
 	MODEL_GOB  = "gob"
 	MODEL_JSON = "json"
 )
-
-type License struct {
-	AppId      string    `json:"app_id"`              // 用户名
-	Secret     string    `json:"secret"`              // 密钥
-	Expiration time.Time `json:"expiration"`          // 到期时间
-	Timestamp  int64     `json:"timestamp"`           // 系统时间戳
-	Signature  []byte    `json:"signature,omitempty"` // 签名
-}
 
 func New(rs *RsaKeyBlock) *LicenseSrv {
 	obj := &LicenseSrv{RSA: rs}
@@ -37,7 +27,8 @@ type LicenseSrv struct {
 	RSA          *RsaKeyBlock
 	license      *License
 	Model        string
-	CheckHandle  []func(srv *LicenseSrv, license *License) error
+	CheckHandle  []func(srv *LicenseSrv, license Licenser) error
+	Target       Licenser
 }
 
 //
@@ -51,7 +42,8 @@ type LicenseSrv struct {
 
 func NewLicenseServ(fns ...func(*LicenseSrv)) *LicenseSrv {
 	serv := &LicenseSrv{
-		Model: MODEL_JSON,
+		Model:  MODEL_JSON,
+		Target: &License{},
 	}
 	for _, fn := range fns {
 		fn(serv)
@@ -68,24 +60,24 @@ func (self *LicenseSrv) Auth(appid, secret string) {
 	self.license.Secret = secret
 }
 
-func (self *LicenseSrv) MakeLicense(license *License) error {
+func (self *LicenseSrv) MakeLicense(license Licenser) error {
 	// 签名许可证
 	signature, err := self.signLicense(license, self.RSA.PrivateKey())
 	if err != nil {
 		return err
 	}
-	license.Signature = signature
+	license.SetSignature(signature)
 
 	return self.save(self.Path()+"/"+"LICENSE", license)
 }
 
-func (self *LicenseSrv) MakeLicenseSimple(license *License) error {
+func (self *LicenseSrv) MakeLicenseSimple(license Licenser) error {
 	// 签名许可证
 	signature, err := self.signLicense(license, self.RSA.PrivateKey())
 	if err != nil {
 		return err
 	}
-	license.Signature = signature
+	license.SetSignature(signature)
 
 	return nil
 }
@@ -100,6 +92,7 @@ func (self *LicenseSrv) Path(ps ...string) string {
 	return self.license_path
 }
 
+// discard
 func (self *LicenseSrv) Conv2Bytes(data *License) ([]byte, error) {
 	// 方式2 加入缓冲区
 	var buf1 bytes.Buffer
@@ -118,17 +111,19 @@ func (self *LicenseSrv) Conv2Bytes(data *License) ([]byte, error) {
 
 // protected methods .
 // 签名许可证
-func (self *LicenseSrv) signLicense(license *License, privateKey *rsa.PrivateKey) ([]byte, error) {
-	licenseCopy := *license
-	licenseCopy.Signature = nil // 签名前移除签名字段
+func (self *LicenseSrv) signLicense(license Licenser, privateKey *rsa.PrivateKey) ([]byte, error) {
+	//licenseCopy := license
+	//licenseCopy.Signature = nil // 签名前移除签名字段
 
 	// 使用gob编码
-	licenseData, err := self.readGobByte(&licenseCopy)
-	if err != nil {
-		return nil, err
-	}
-
-	hash := sha256.Sum256(licenseData)
+	//licenseData, err := self.readGobByte(&licenseCopy)
+	//if err != nil {
+	//	return nil, err
+	//}
+	h := crypto.SHA256.New()
+	h.Write(license.Bytes())
+	//hash := sha256.Sum256(licenseData)
+	hash := h.Sum(nil)
 	signature, err := rsa.SignPKCS1v15(rand.Reader, privateKey, crypto.SHA256, hash[:])
 	if err != nil {
 		return nil, err

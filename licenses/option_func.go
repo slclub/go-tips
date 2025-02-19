@@ -10,14 +10,14 @@ import (
 
 // functions
 // license 基础检测
-func OptionCheckLicenseBase(lrv *LicenseSrv, license *License) error {
+func OptionCheckLicenseBase(lrv *LicenseSrv, license Licenser) error {
 	// 检查过期时间 这里是使用本地时间校验的，也可以通过网络时间校验
-	if time.Now().After(license.Expiration) {
+	if time.Now().After(license.GetExpiration()) {
 		return errors.New("EN:(license verification expired) CN:(许可证已过期) ")
 	}
 
 	// 检查用户名
-	if !(license.AppId == lrv.license.AppId && license.Secret == lrv.license.Secret) {
+	if !(license.GetAppId() == lrv.license.AppId && license.GetSecret() == lrv.license.Secret) {
 		return errors.New("EN:(license verification unvalid) CN:(许可证无效) ")
 	}
 	return nil
