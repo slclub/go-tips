@@ -13,7 +13,6 @@ import (
 	"net/http"
 	"os"
 	"strings"
-	"time"
 )
 
 // 验证许可证签名
@@ -69,7 +68,7 @@ func (self *LicenseSrv) GetLicenseFromInternet(license Licenser, apiUrl string, 
 		"application/x-www-form-urlencoded",
 		strings.NewReader(`{"AppId": "`+appId+`"}`))
 	if err != nil {
-		log.Println(time.Now().Unix(), " License HttpPost  error:"+err.Error())
+		log.Println(" License HttpPost  error:" + err.Error())
 		return err
 	}
 
@@ -77,7 +76,7 @@ func (self *LicenseSrv) GetLicenseFromInternet(license Licenser, apiUrl string, 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		// handle error
-		log.Println(time.Now().Unix(), "License no resp  error:"+err.Error())
+		log.Println("License no resp  error:" + err.Error())
 		return err
 	}
 	body = fn(body)
