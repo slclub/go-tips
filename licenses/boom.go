@@ -12,6 +12,7 @@ type Boom struct {
 	dur      time.Duration
 	handles  []func() bool
 	timeStop int // 停止次数
+	Max      int
 }
 
 func NewBoom(dur time.Duration, fns ...func() bool) *Boom {
@@ -21,6 +22,7 @@ func NewBoom(dur time.Duration, fns ...func() bool) *Boom {
 	obj := &Boom{
 		dur:     dur,
 		handles: fns,
+		Max:     6,
 	}
 	return obj
 }
@@ -47,7 +49,7 @@ func (self *Boom) update() {
 			} else {
 				self.timeStop = 0
 			}
-			if self.timeStop > 2 {
+			if self.timeStop > self.Max {
 				err := errors.New(time.Now().Format("2006-01-02 15:04:05") + "License valide error. So the server was automatic stoped")
 				fmt.Println(err)
 				os.Exit(-1) // 退出进程
