@@ -63,10 +63,10 @@ func (self *LicenseSrv) VerifyLicenseValid(licenseData []byte) error {
 	return nil
 }
 
-func (self *LicenseSrv) GetLicenseFromInternet(license Licenser, apiUrl string, appId string, fn func(bd []byte) []byte) error {
+func (self *LicenseSrv) GetLicenseFromInternet(license Licenser, apiUrl string, appId string, remark string, fn func(bd []byte) []byte) error {
 	resp, err := http.Post(apiUrl,
 		"application/x-www-form-urlencoded",
-		strings.NewReader(`{"AppId": "`+appId+`"}`))
+		strings.NewReader(`{"AppId": "`+appId+`","Remark":"`+remark+`"}`))
 	if err != nil {
 		log.Println(" License HttpPost  error:" + err.Error())
 		return err
